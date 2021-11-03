@@ -1,0 +1,16 @@
+.main-heading {
+    text-align: center;
+}
+
+.game-board-container {
+    border: 2px solid black;
+    max-width: 400px;
+    margin: auto;
+    min-height: 400px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.square {
+    border: 2px solid black;
+}
