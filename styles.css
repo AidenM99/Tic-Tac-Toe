@@ -1,5 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Mochiy+Pop+P+One&display=swap');
+
+:root {
+    --blueColor: #364f6b;
+    --redColor: #fc1585;
+}
+
+body {
+    font-family: 'Mochiy Pop P One', sans-serif;
+}
+
 .main-heading {
     text-align: center;
+    font-size: 5rem;
+    color: var(--blueColor);
+    text-shadow: 4px 4px var(--redColor);
 }
 
 .game-board-container {
@@ -14,4 +28,8 @@
 .square {
     border: 2px solid black;
     cursor: pointer;
+}
+
+.X {
+    color: red;
 }
