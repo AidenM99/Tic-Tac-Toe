@@ -1,13 +1,15 @@
 
 function createPlayer(sign) {
-    const getSign = () => sign
-    return { getSign }
+    return { sign }
 }
 
 
 const gameController = (() => {
     const playerX = createPlayer("X");
     const playerO = createPlayer("O");
+
+    const winnerContainer = document.querySelector(".winner-container");
+    const winnerAnnouncement = document.querySelector(".winner-announcement");
 
     const winningCombinations = [
         [0, 1, 2], // top row
@@ -22,51 +24,79 @@ const gameController = (() => {
     ];
 
     const winCheck = () => {
+
         winningCombinations.forEach(row => {
             const a = row[0];
             const b = row[1];
             const c = row[2];
 
-            if (gameBoard.board[a]  && gameBoard.board[b] === gameBoard.board[a] && gameBoard.board[c] === gameBoard.board[a]) {
-                console.log(`Player ${gameBoard.board[a]} wins with the following combination: ${a} ${b} ${c}!`)
-            }
-        })
-    }
+            if (gameBoard.board[a] && gameBoard.board[b] === gameBoard.board[a] && gameBoard.board[c] === gameBoard.board[a]) {
+                winnerAnnouncement.textContent = `Player ${gameBoard.board[a]} wins!`;
+                winnerContainer.style.display = "block";
+            };
+        });
+    };
 
-    return { winCheck, playerX, playerO }
+    return { winCheck, playerX, playerO, winnerContainer }
 
 })();
 
 
 const gameBoard = (() => {
-    let gameSquare = document.querySelectorAll(".square");
+    const gameSquare = document.querySelectorAll(".square");
 
     const board = ["", "", "", "", "", "", "", "", ""];
 
     const updateBoard = (index, sign) => {
         board[index] = sign;
         gameSquare[index].textContent = sign;
-        console.log(board)
     }
 
-    return { updateBoard, board }
+    const resetBoard = () => {
+        gameController.winnerContainer.style.display = "none";
+        for (i = 0; i < board.length; i++) {
+            board[i] = "";
+        };
+        gameSquare.forEach(square => {
+            square.textContent = "";
+        });
+        displayController.currentSign.reset();
+    };
+
+
+    return { updateBoard, resetBoard, board }
 
 })();
 
 
 const displayController = (() => {
-    let gameSquare = document.querySelectorAll(".square");
+    const turnText = document.querySelector(".current-turn");
+    const gameSquare = document.querySelectorAll(".square");
+    const resetButton = document.querySelector(".reset");
 
-    const _getCurrentSign = () => {
+    const getCurrentSign = () => {
         let count = -1;
-        return () => {
-            count ++;
-            if (count % 2 === 0) return gameController.playerX.getSign();
-            return gameController.playerO.getSign();
-        }
+        const counter = () => {
+            count++;
+            currentTurn(count);
+            if (count % 2 === 0) {
+                return gameController.playerX.sign;
+            }
+            return gameController.playerO.sign;
+        };
+        counter.reset = () => {
+            count = -1;
+            turnText.textContent = `It's player X's turn`;
+        };
+
+        return counter
     };
 
-    const currentSign = _getCurrentSign();
+    const currentSign = getCurrentSign();
+
+    const currentTurn = (count) => {
+        count % 2 === 0 ? turnText.textContent = `It's player O's turn` : turnText.textContent = `It's player X's turn`;
+    }
 
     gameSquare.forEach(square => {
         square.addEventListener("click", function () {
@@ -75,6 +105,12 @@ const displayController = (() => {
             gameBoard.updateBoard(index, currentSign());
             gameController.winCheck();
         })
-    })
+    });
+
+    resetButton.addEventListener("click", () => {
+        gameBoard.resetBoard();
+    });
+
+    return { currentSign }
 
 })();
