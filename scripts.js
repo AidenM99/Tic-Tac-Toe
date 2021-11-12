@@ -24,6 +24,7 @@ const gameController = (() => {
     ];
 
     const winCheck = () => {
+        if (winnerContainer.style.display === "block") return winnerContainer.style.display = "none";
 
         winningCombinations.forEach(row => {
             const a = row[0];
@@ -48,21 +49,15 @@ const gameBoard = (() => {
     const board = ["", "", "", "", "", "", "", "", ""];
 
     const updateBoard = (index, sign) => {
-        board[index] = sign;
         gameSquare[index].textContent = sign;
-    }
+        board[index] = sign;
+    };
 
     const resetBoard = () => {
-        gameController.winnerContainer.style.display = "none";
         for (i = 0; i < board.length; i++) {
             board[i] = "";
         };
-        gameSquare.forEach(square => {
-            square.textContent = "";
-        });
-        displayController.currentSign.reset();
     };
-
 
     return { updateBoard, resetBoard, board }
 
@@ -70,46 +65,60 @@ const gameBoard = (() => {
 
 
 const displayController = (() => {
-    const turnText = document.querySelector(".current-turn");
     const gameSquare = document.querySelectorAll(".square");
     const resetButton = document.querySelector(".reset");
+
+    gameSquare.forEach(square => {
+        square.addEventListener("click", function () {
+            if (square.textContent != "") return;
+            const index = square.dataset.index;
+            gameBoard.updateBoard(index, turnController.currentSign());
+            gameController.winCheck();
+        });
+    });
+
+    resetButton.addEventListener("click", () => {
+        turnController.currentSign.reset();
+        gameController.winCheck();
+        gameBoard.resetBoard();
+        clearSquares();
+    });
+
+    const clearSquares = () => {
+        gameSquare.forEach(square => {
+            square.textContent = "";
+        });
+    };
+
+})();
+
+const turnController = (() => {
+    const turnText = document.querySelector(".current-turn");
 
     const getCurrentSign = () => {
         let count = -1;
         const counter = () => {
             count++;
             currentTurn(count);
+
             if (count % 2 === 0) {
                 return gameController.playerX.sign;
-            }
+            };
             return gameController.playerO.sign;
         };
+
         counter.reset = () => {
             count = -1;
             turnText.textContent = `It's player X's turn`;
         };
-
-        return counter
+        return counter;
     };
 
     const currentSign = getCurrentSign();
 
     const currentTurn = (count) => {
         count % 2 === 0 ? turnText.textContent = `It's player O's turn` : turnText.textContent = `It's player X's turn`;
-    }
-
-    gameSquare.forEach(square => {
-        square.addEventListener("click", function () {
-            if (square.textContent != "") return;
-            const index = square.dataset.index;
-            gameBoard.updateBoard(index, currentSign());
-            gameController.winCheck();
-        })
-    });
-
-    resetButton.addEventListener("click", () => {
-        gameBoard.resetBoard();
-    });
+    };
 
     return { currentSign }
 
