@@ -34,11 +34,25 @@ const gameController = (() => {
             if (gameBoard.board[a] && gameBoard.board[b] === gameBoard.board[a] && gameBoard.board[c] === gameBoard.board[a]) {
                 winnerAnnouncement.textContent = `Player ${gameBoard.board[a]} wins!`;
                 winnerContainer.style.display = "block";
+                return;
+            };
+
+            if (gameBoard.board.every(ele => ele != "")) {
+                winnerAnnouncement.textContent = `No winner!`;
+                winnerContainer.style.display = "block";
+                return;
             };
         });
     };
 
-    return { winCheck, playerX, playerO, winnerContainer }
+    const reset = () => {
+        turnController.currentSign.reset();
+        gameBoard.resetBoard();
+        displayController.clearSquares();
+        winCheck();
+    };
+
+    return { playerX, playerO, winnerContainer, winCheck, reset }
 
 })();
 
@@ -72,16 +86,17 @@ const displayController = (() => {
         square.addEventListener("click", function () {
             if (square.textContent != "") return;
             const index = square.dataset.index;
+            appendSign(index);
+        });
+
+        const appendSign = (index) => {
             gameBoard.updateBoard(index, turnController.currentSign());
             gameController.winCheck();
-        });
+        };
     });
 
     resetButton.addEventListener("click", () => {
-        turnController.currentSign.reset();
-        gameController.winCheck();
-        gameBoard.resetBoard();
-        clearSquares();
+        gameController.reset();
     });
 
     const clearSquares = () => {
@@ -90,7 +105,10 @@ const displayController = (() => {
         });
     };
 
+    return { clearSquares }
+
 })();
+
 
 const turnController = (() => {
     const turnText = document.querySelector(".current-turn");
@@ -111,6 +129,7 @@ const turnController = (() => {
             count = -1;
             turnText.textContent = `It's player X's turn`;
         };
+
         return counter;
     };
 
