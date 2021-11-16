@@ -9,47 +9,31 @@ body {
     font-family: 'Mochiy Pop P One', sans-serif;
     margin: 0;
     padding: 0;
+    text-align: center;
+    background-color: #F5F5F5;
 }
 
-.main-heading {
-    text-align: center;
-    font-size: 5rem;
-    color: var(--blueTextColor);
-    text-shadow: 4px 4px var(--redTextColor);
+
+/***** Containers *****/
+.start-menu-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    height: 90vh;
+}
+
+.game-container {
+    display: none;
 }
 
 .game-board-container {
-    order: 2;
-    border: 2px solid black;
     max-width: 450px;
     margin: auto;
     display: grid;
+    grid-gap: 3px;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 150px);
-    box-shadow:
-    inset 0 0 50px #fff,  
-      inset 20px 0 80px #f0f,  
-      inset -20px 0 80px #0ff,  
-      inset 20px 0 300px #f0f,  
-      inset -20px 0 300px #0ff, 
-      0 0 50px #fff,           
-      -10px 0 80px #f0f,      
-      10px 0 80px #0ff; 
-
-}
-
-.square {
-    border: 2px solid black;
-    cursor: pointer;
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 4rem;
-}
-
-.current-turn {
-    text-align: center;
-    margin-top: 40px;
 }
 
 .winner-container {
@@ -68,17 +52,26 @@ body {
     padding-top: 15%;
 }
 
-.winner-announcement {
+
+/***** Headings *****/
+.main-heading {
     margin: 0;
+    font-size: 3.75rem;
 }
 
-.current-turn {
-    font-size: 1.5rem;
+.sub-heading {
+    font-size: 1.75rem;
+    margin: 10px 0 30px;
+}
+
+.main-heading, .sub-heading {
     color: var(--blueTextColor);
-    font-weight: bold;
+    text-shadow: 3px 3px var(--redTextColor);
 }
 
-.reset {
+
+/***** Buttons *****/
+.reset, .opponent-button {
     display:inline-block;
     padding:10px 10px;
     border:0.1em solid var(--redTextColor);
@@ -97,6 +90,36 @@ body {
     font-family: 'Mochiy Pop P One', sans-serif;
     }
 
-.reset:hover {
-     cursor: pointer;
+    .opponent-button {
+        min-width: 90px;
+        margin-right: 10px;
     }
+    
+    .reset:hover, .opponent-button:hover {
+        cursor: pointer;
+        transform: translateY(-10px);
+        transition: 350ms;
+    }
+
+
+/***** Game Board *****/
+.square {
+    background-color: var(--blueTextColor);
+    cursor: pointer;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+}
+
+.winner-announcement {
+    margin: 0;
+}
+
+.current-turn {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 1.5rem;
+    color: var(--blueTextColor);
+    font-weight: bold;
+}

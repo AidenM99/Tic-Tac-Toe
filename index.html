@@ -11,27 +11,41 @@
 
 <body>
 
-    <header>
-        <h1 class="main-heading">Tic-Tac-Toe</h1>
-    </header>
+    <div class="start-menu-container">
 
-    <div class="winner-container">
-        <p class="winner-announcement"></p>
-        <input type="button" value="RESTART" class="reset">
+        <header>
+            <h1 class="main-heading">Tic-Tac-Toe</h1>
+            <h2 class="sub-heading">Choose Your Opponent:</h2>
+        </header>
+
+        <div class="opponent-button-container">
+            <input type="button" value="PLAYER" class="player opponent-button">
+            <input type="button" value="AI" class="ai opponent-button">
+        </div>
+
     </div>
 
-    <div class="game-board-container">
-        <div class="square" data-index="0"></div>
-        <div class="square" data-index="1"></div>
-        <div class="square" data-index="2"></div>
-        <div class="square" data-index="3"></div>
-        <div class="square" data-index="4"></div>
-        <div class="square" data-index="5"></div>
-        <div class="square" data-index="6"></div>
-        <div class="square" data-index="7"></div>
-        <div class="square" data-index="8"></div>
+    <div class="game-container">
+
+        <div class="winner-container">
+            <p class="winner-announcement"></p>
+            <input type="button" value="PLAY AGAIN" class="reset">
+        </div>
+
+        <div class="game-board-container">
+            <div class="square" data-index="0"></div>
+            <div class="square" data-index="1"></div>
+            <div class="square" data-index="2"></div>
+            <div class="square" data-index="3"></div>
+            <div class="square" data-index="4"></div>
+            <div class="square" data-index="5"></div>
+            <div class="square" data-index="6"></div>
+            <div class="square" data-index="7"></div>
+            <div class="square" data-index="8"></div>
+        </div>
+        <p class="current-turn">Current Turn: Player X</p>
+
     </div>
-    <p class="current-turn">It's player X's turn</p>
 
     <script src="scripts.js"></script>
 </body>
