@@ -1,22 +1,38 @@
 
-function createPlayer(sign) {
-    return { sign }
-};
-
 const initialiseGame = (() => {
-    const playerButton = document.querySelector(".player");
     const subHeading = document.querySelector(".sub-heading");
     const gameContainer = document.querySelector(".game-container");
+    const opponentButton = document.querySelectorAll(".opponent-button");
     const startMenuContainer = document.querySelector(".start-menu-container");
     const buttonContainer = document.querySelector(".opponent-button-container");
 
-    playerButton.addEventListener("click", () => {
+    opponentButton.forEach(button => {
+        button.addEventListener("click", (e) => {
+            startGame(e.target.value);
+        });
+    });
+
+    const startGame = () => {
         startMenuContainer.style.height = "200px";
         buttonContainer.style.display = "none";
         gameContainer.style.display = "block";
         subHeading.style.display = "none";
-    });
+    };
+
+    const closeGame = () => {
+        gameContainer.style.display = null;
+        subHeading.style.display = null;
+        buttonContainer.style.display = null;
+        startMenuContainer.style.height = null;
+    };
+
+    return { closeGame }
 })();
+
+
+function createPlayer(sign) {
+    return { sign }
+};
 
 
 const gameController = (() => {
@@ -26,7 +42,7 @@ const gameController = (() => {
     let currentPlayer = playerO.sign;
 
     const winnerContainer = document.querySelector(".winner-container");
-    const winnerAnnouncement = document.querySelector(".winner-announcement");
+    const winnerText = document.querySelector(".winner-text");
 
     const winningCombinations = [
         [0, 1, 2], // top row
@@ -51,14 +67,14 @@ const gameController = (() => {
             const c = row[2];
 
             if (gameBoard.board[a] && gameBoard.board[b] === gameBoard.board[a] && gameBoard.board[c] === gameBoard.board[a]) {
-                winnerAnnouncement.textContent = `Player ${gameBoard.board[a]} wins!`;
+                winnerText.textContent = `Player ${gameBoard.board[a]} Wins!`;
                 winnerContainer.style.display = "block";
                 winningCombo = true;
                 return;
             };
 
             if (gameBoard.board.every(ele => ele != "" && !winningCombo)) {
-                winnerAnnouncement.textContent = `It's a tie!`;
+                winnerText.textContent = "It's a tie!"
                 winnerContainer.style.display = "block";
                 return;
             };
@@ -66,7 +82,8 @@ const gameController = (() => {
     };
 
     const reset = () => {
-        displayController.currentTurn.textContent = "Current Turn: Player X";
+        displayController.currentTurn.innerHTML = "Current Turn: <span class='purple'>Player X</span>";
+        winnerText.innerHTML = `Player <span class="winning-sign"></span> Wins!</p>`
         gameController.currentPlayer = playerO.sign;
         displayController.clearSquares();
         gameBoard.resetBoard();
@@ -83,6 +100,8 @@ const gameBoard = (() => {
     const board = ["", "", "", "", "", "", "", "", ""];
 
     const updateBoard = (index, sign) => {
+        if (sign === "X") gameSquare[index].classList.add("purple");
+        gameSquare[index].classList.add("blue");
         gameSquare[index].textContent = sign;
         board[index] = sign;
     };
@@ -100,6 +119,7 @@ const gameBoard = (() => {
 const displayController = (() => {
     const currentTurn = document.querySelector(".current-turn");
     const gameSquare = document.querySelectorAll(".square");
+    const backArrow = document.querySelector(".back-arrow");
     const resetButton = document.querySelector(".reset");
 
     gameSquare.forEach(square => {
@@ -112,10 +132,10 @@ const displayController = (() => {
 
     const currentSign = () => {
         if (gameController.currentPlayer === gameController.playerX.sign) {
-            currentTurn.textContent = "Current Turn: Player X";
+            currentTurn.innerHTML = "Current Turn: <span class='purple'>Player X</span>";
             return gameController.currentPlayer = gameController.playerO.sign;
         };
-        currentTurn.textContent = "Current Turn: Player O";
+        currentTurn.innerHTML = "Current Turn: <span class='blue'>Player O</span>";
         return gameController.currentPlayer = gameController.playerX.sign;
     };
 
@@ -128,8 +148,15 @@ const displayController = (() => {
         gameController.reset();
     });
 
+    backArrow.addEventListener("click", () => {
+        gameController.reset();
+        initialiseGame.closeGame();
+    });
+
     const clearSquares = () => {
         gameSquare.forEach(square => {
+            square.classList.remove("purple");
+            square.classList.remove("blue");
             square.textContent = "";
         });
     };

@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Mochiy+Pop+P+One&display=swap');
 
 :root {
-    --blueTextColor: #364f6b;
-    --redTextColor: #fc1585;
+    --yellow: #FFFF00;
+    --darkBlue: #131C3F;
+    --lightBlue: #72BCD4;
+    --purple: #800080;
 }
 
 body {
@@ -10,7 +12,8 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
-    background-color: #F5F5F5;
+    background-image: linear-gradient(315deg, #d8dede 0%, #e5bdf6 74%);
+    height: 100vh;
 }
 
 
@@ -28,12 +31,14 @@ body {
 }
 
 .game-board-container {
+    background-color: #000000;
     max-width: 450px;
     margin: auto;
     display: grid;
     grid-gap: 3px;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 150px);
+    border: 5px solid var(--darkBlue);
 }
 
 .winner-container {
@@ -43,55 +48,58 @@ body {
     width: 100%;
     height: 100vh;
     background-color: rgba(0, 0 ,0 , 0.5);
+    color: #FFFFFF;
     display: none;
     z-index:1;
     font-size: 5rem;
     text-align: center;
-    color: var(--redTextColor);
-    text-shadow: 4px 4px var(--blueTextColor);
     padding-top: 15%;
 }
 
 
-/***** Headings *****/
+/***** Text *****/
 .main-heading {
     margin: 0;
     font-size: 3.75rem;
 }
 
 .sub-heading {
-    font-size: 1.75rem;
-    margin: 10px 0 30px;
+    font-size: 2rem;
+    margin: 10px 0 20px;
 }
 
 .main-heading, .sub-heading {
-    color: var(--blueTextColor);
-    text-shadow: 3px 3px var(--redTextColor);
+    color: var(--darkBlue);
 }
 
+.blue {
+    color: var(--lightBlue);
+}
+
+.purple {
+    color: var(--purple);
+}
 
 /***** Buttons *****/
 .reset, .opponent-button {
     display:inline-block;
     padding:10px 10px;
-    border:0.1em solid var(--redTextColor);
-    box-shadow: 0 0 10px var(--redTextColor);
+    border:2px solid var(--darkBlue);
     margin:0 0.3em 0.3em 0;
-    border-radius:10px;
+    border-radius:7.5px;
     box-sizing: border-box;
     text-decoration:none;
-    font-family:'Roboto',sans-serif;
-    font-weight:300;
     text-align:center;
     transition: all 0.2s;
-    background-color:#FFFFFF;
-    color: var(--redTextColor);
+    background-color: var(--yellow);
+    color: var(--darkBlue);
     font-weight:bold;
+    font-size: 1rem;
     font-family: 'Mochiy Pop P One', sans-serif;
     }
 
     .opponent-button {
-        min-width: 90px;
+        min-width: 110px;
         margin-right: 10px;
     }
     
@@ -101,10 +109,20 @@ body {
         transition: 350ms;
     }
 
+    .back-arrow {
+        color: var(--yellow);
+    }
+
+    .back-arrow:hover {
+        cursor: pointer;
+        transform: scale(1.3);
+        transition: 350ms;
+    }
+
 
 /***** Game Board *****/
 .square {
-    background-color: var(--blueTextColor);
+    background-color: #FFFFFF;
     cursor: pointer;
     display:flex;
     justify-content: center;
@@ -112,7 +130,7 @@ body {
     font-size: 4rem;
 }
 
-.winner-announcement {
+.winner-text {
     margin: 0;
 }
 
@@ -120,6 +138,6 @@ body {
     text-align: center;
     margin-top: 40px;
     font-size: 1.5rem;
-    color: var(--blueTextColor);
+    color: var(--darkBlue);
     font-weight: bold;
 }
