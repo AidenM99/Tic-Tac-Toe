@@ -72,6 +72,15 @@ body {
     color: var(--darkBlue);
 }
 
+.go-back {
+    margin: 5px 0 0 0;
+    color: var(--yellow);
+}
+
+.show-text {
+    display: none;
+}
+
 .blue {
     color: var(--lightBlue);
 }
@@ -117,6 +126,10 @@ body {
         cursor: pointer;
         transform: scale(1.3);
         transition: 350ms;
+    }
+
+    .back-arrow:hover + .show-text {
+        display: block;
     }
 
 

@@ -1,14 +1,20 @@
-
 const initialiseGame = (() => {
     const subHeading = document.querySelector(".sub-heading");
     const gameContainer = document.querySelector(".game-container");
-    const opponentButton = document.querySelectorAll(".opponent-button");
+    const opponentButtons = document.querySelectorAll(".opponent-button");
     const startMenuContainer = document.querySelector(".start-menu-container");
     const buttonContainer = document.querySelector(".opponent-button-container");
 
-    opponentButton.forEach(button => {
+    let isAI = false;
+
+    const checkAI = () => {
+        return isAI;
+    }
+
+    opponentButtons.forEach(button => {
         button.addEventListener("click", (e) => {
-            startGame(e.target.value);
+            startGame();
+            if (e.target.value === "AI") isAI = true;
         });
     });
 
@@ -26,23 +32,36 @@ const initialiseGame = (() => {
         startMenuContainer.style.height = null;
     };
 
-    return { closeGame }
+    return { closeGame, checkAI }
 })();
 
 
-function createPlayer(sign) {
+function createPlayer(sign, type) {
     return { sign }
 };
 
-
-const gameController = (() => {
+const gameController = ((e) => {
     const playerX = createPlayer("X");
     const playerO = createPlayer("O");
 
-    let currentPlayer = playerO.sign;
-
     const winnerContainer = document.querySelector(".winner-container");
     const winnerText = document.querySelector(".winner-text");
+
+    let currentPlayer = playerO.sign;
+
+    const aiPlay = () => {
+        if (gameBoard.board.every(ele => ele === "X" || ele === "O")) return;
+        let num;
+        do {
+            num = generateNum();
+        } while (gameBoard.board[num] != "");
+        displayController.appendSign(num);
+    };
+
+    const generateNum = () => {
+        const randomNum = Math.floor(Math.random() * gameBoard.board.length);
+        return randomNum;
+    }
 
     const winningCombinations = [
         [0, 1, 2], // top row
@@ -90,7 +109,7 @@ const gameController = (() => {
         winCheck();
     };
 
-    return { playerX, playerO, currentPlayer, winnerContainer, winCheck, reset }
+    return { playerX, playerO, currentPlayer, winnerContainer, winCheck, reset, aiPlay }
 })();
 
 
@@ -127,6 +146,8 @@ const displayController = (() => {
             if (square.textContent != "") return;
             const index = square.dataset.index;
             appendSign(index);
+            if (initialiseGame.checkAI()) gameController.aiPlay();
+            gameController.winCheck();
         });
     });
 
@@ -141,7 +162,6 @@ const displayController = (() => {
 
     const appendSign = (index) => {
         gameBoard.updateBoard(index, currentSign());
-        gameController.winCheck();
     };
 
     resetButton.addEventListener("click", () => {
