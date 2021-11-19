@@ -14,7 +14,8 @@ const initialiseGame = (() => {
     opponentButtons.forEach(button => {
         button.addEventListener("click", (e) => {
             startGame();
-            if (e.target.value === "AI") isAI = true;
+            if (e.target.value === "AI") return isAI = true;
+            isAI = false;
         });
     });
 
