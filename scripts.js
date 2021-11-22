@@ -37,11 +37,11 @@ const initialiseGame = (() => {
 })();
 
 
-function createPlayer(sign, type) {
+function createPlayer(sign) {
     return { sign }
 };
 
-const gameController = ((e) => {
+const gameController = (() => {
     const playerX = createPlayer("X");
     const playerO = createPlayer("O");
 
@@ -54,15 +54,16 @@ const gameController = ((e) => {
         if (gameBoard.board.every(ele => ele === "X" || ele === "O")) return;
         let num;
         do {
-            num = generateNum();
+            num = randomMove();
         } while (gameBoard.board[num] != "");
-        displayController.appendSign(num);
+        displayController.fillSquare(num);
+        gameController.winCheck();
     };
 
-    const generateNum = () => {
+    const randomMove = () => {
         const randomNum = Math.floor(Math.random() * gameBoard.board.length);
         return randomNum;
-    }
+    };
 
     const winningCombinations = [
         [0, 1, 2], // top row
@@ -90,15 +91,14 @@ const gameController = ((e) => {
                 winnerText.textContent = `Player ${gameBoard.board[a]} Wins!`;
                 winnerContainer.style.display = "block";
                 winningCombo = true;
-                return;
             };
 
             if (gameBoard.board.every(ele => ele != "" && !winningCombo)) {
                 winnerText.textContent = "It's a tie!"
                 winnerContainer.style.display = "block";
-                return;
             };
         });
+        return winningCombo;
     };
 
     const reset = () => {
@@ -122,8 +122,8 @@ const gameBoard = (() => {
     const updateBoard = (index, sign) => {
         if (sign === "X") gameSquare[index].classList.add("purple");
         gameSquare[index].classList.add("blue");
-        gameSquare[index].textContent = sign;
         board[index] = sign;
+        gameSquare[index].textContent = sign;
     };
 
     const resetBoard = () => {
@@ -146,11 +146,16 @@ const displayController = (() => {
         square.addEventListener("click", function () {
             if (square.textContent != "") return;
             const index = square.dataset.index;
-            appendSign(index);
-            if (initialiseGame.checkAI()) gameController.aiPlay();
-            gameController.winCheck();
+            makeMove(index);
         });
     });
+
+    const makeMove = (index) => {
+        fillSquare(index);
+        let result = gameController.winCheck();
+        if (result) return; 
+        if (initialiseGame.checkAI()) gameController.aiPlay();
+    };
 
     const currentSign = () => {
         if (gameController.currentPlayer === gameController.playerX.sign) {
@@ -161,7 +166,7 @@ const displayController = (() => {
         return gameController.currentPlayer = gameController.playerX.sign;
     };
 
-    const appendSign = (index) => {
+    const fillSquare = (index) => {
         gameBoard.updateBoard(index, currentSign());
     };
 
@@ -182,5 +187,5 @@ const displayController = (() => {
         });
     };
 
-    return { clearSquares, appendSign, currentTurn }
+    return { clearSquares, fillSquare, currentTurn }
 })();
