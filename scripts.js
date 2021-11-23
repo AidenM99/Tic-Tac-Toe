@@ -1,23 +1,38 @@
-const initialiseGame = (() => {
-    const subHeading = document.querySelector(".sub-heading");
-    const gameContainer = document.querySelector(".game-container");
-    const opponentButtons = document.querySelectorAll(".opponent-button");
-    const startMenuContainer = document.querySelector(".start-menu-container");
+function createPlayer(sign) {
+    return { sign }
+};
+
+
+const displayController = (() => {
     const buttonContainer = document.querySelector(".opponent-button-container");
+    const startMenuContainer = document.querySelector(".start-menu-container");
+    const opponentButtons = document.querySelectorAll(".opponent-button");
+    const winnerContainer = document.querySelector(".winner-container");
+    const gameContainer = document.querySelector(".game-container");
+    const subHeading = document.querySelector(".sub-heading");
+    const currentTurn = document.querySelector(".current-turn");
+    const winnerText = document.querySelector(".winner-text");
+    const backArrow = document.querySelector(".back-arrow");
+    const gameSquare = document.querySelectorAll(".square");
+    const resetButton = document.querySelector(".reset");
 
     let isAI = false;
 
-    const checkAI = () => {
+    const aiCheck = () => {
         return isAI;
-    }
+    };
 
     opponentButtons.forEach(button => {
         button.addEventListener("click", (e) => {
-            startGame();
-            if (e.target.value === "AI") return isAI = true;
-            isAI = false;
+            initialiseGame(e);
         });
     });
+
+    const initialiseGame = (e) => {
+        startGame();
+        if (e.target.value === "AI") return isAI = true;
+        isAI = false;
+    };
 
     const startGame = () => {
         startMenuContainer.style.height = "200px";
@@ -27,42 +42,106 @@ const initialiseGame = (() => {
     };
 
     const closeGame = () => {
+        startMenuContainer.style.height = null;
+        buttonContainer.style.display = null;
         gameContainer.style.display = null;
         subHeading.style.display = null;
-        buttonContainer.style.display = null;
-        startMenuContainer.style.height = null;
     };
 
-    return { closeGame, checkAI }
+    const clearSquares = () => {
+        gameSquare.forEach(square => {
+            square.classList.remove("purple");
+            square.classList.remove("blue");
+            square.textContent = "";
+        });
+    };
+
+    const showWinner = (board, tie) => {
+        winnerText.textContent = `Player ${board} Wins!`;
+        winnerContainer.style.display = "block";
+    };
+
+    const showTie = () => {
+        winnerText.textContent = "It's a tie!";
+        winnerContainer.style.display = "block";
+    };
+
+    const hideWinner = () => {
+        winnerContainer.style.display = "none";
+    }
+
+    gameSquare.forEach(square => {
+        square.addEventListener("click", function () {
+            if (square.textContent != "") return;
+            const index = square.dataset.index;
+            gameController.makeMove(index);
+        });
+    });
+
+    resetButton.addEventListener("click", () => {
+        gameController.reset();
+    });
+
+    backArrow.addEventListener("click", () => {
+        gameController.reset();
+        closeGame();
+    });
+
+    return {
+        aiCheck,
+        clearSquares,
+        showWinner,
+        showTie,
+        hideWinner,
+        currentTurn,
+        winnerText,
+    };
 })();
 
-
-function createPlayer(sign) {
-    return { sign }
-};
 
 const gameController = (() => {
     const playerX = createPlayer("X");
     const playerO = createPlayer("O");
 
-    const winnerContainer = document.querySelector(".winner-container");
-    const winnerText = document.querySelector(".winner-text");
+    let currentPlayer = playerX.sign;
 
-    let currentPlayer = playerO.sign;
+    const getCurrentPlayer = () => {
+        return currentPlayer;
+    };
 
     const aiPlay = () => {
         if (gameBoard.board.every(ele => ele === "X" || ele === "O")) return;
         let num;
         do {
             num = randomMove();
-        } while (gameBoard.board[num] != "");
-        displayController.fillSquare(num);
-        gameController.winCheck();
+        } while (typeof gameBoard.board[num] != "number");
+        fillSquare(num);
+        winCheck(gameBoard.board, getCurrentPlayer());
     };
 
     const randomMove = () => {
         const randomNum = Math.floor(Math.random() * gameBoard.board.length);
         return randomNum;
+    };
+
+    const makeMove = (index) => {
+        fillSquare(index);
+        const result = winCheck(gameBoard.board, getCurrentPlayer());
+        if (result) return;
+        if (displayController.aiCheck()) aiPlay();
+    };
+
+    const fillSquare = (index) => {
+        gameBoard.updateBoard(index, switchSign());
+    };
+
+    const switchSign = () => {
+        if (getCurrentPlayer() === playerX.sign) {
+            displayController.currentTurn.innerHTML = "Current Turn: <span class='purple'>Player X</span>";
+            return currentPlayer = playerO.sign;
+        };
+        displayController.currentTurn.innerHTML = "Current Turn: <span class='blue'>Player O</span>";
+        return currentPlayer = playerX.sign;
     };
 
     const winningCombinations = [
@@ -77,9 +156,7 @@ const gameController = (() => {
         [2, 4, 6]  // diagonal 2
     ];
 
-    const winCheck = () => {
-        if (winnerContainer.style.display === "block") return winnerContainer.style.display = "none";
-
+    const winCheck = (board, sign) => {
         let winningCombo = false;
 
         winningCombinations.forEach(row => {
@@ -87,37 +164,60 @@ const gameController = (() => {
             const b = row[1];
             const c = row[2];
 
-            if (gameBoard.board[a] && gameBoard.board[b] === gameBoard.board[a] && gameBoard.board[c] === gameBoard.board[a]) {
-                winnerText.textContent = `Player ${gameBoard.board[a]} Wins!`;
-                winnerContainer.style.display = "block";
+            if (board[a] === sign && board[b] === sign && board[c] === sign) {
+                displayController.showWinner(board[a]);
                 winningCombo = true;
             };
 
-            if (gameBoard.board.every(ele => ele != "" && !winningCombo)) {
-                winnerText.textContent = "It's a tie!"
-                winnerContainer.style.display = "block";
+            if (board.every(ele => typeof ele != "number" && !winningCombo)) {
+                displayController.showTie();
             };
         });
         return winningCombo;
     };
 
     const reset = () => {
-        displayController.currentTurn.innerHTML = "Current Turn: <span class='purple'>Player X</span>";
-        winnerText.innerHTML = `Player <span class="winning-sign"></span> Wins!</p>`
-        gameController.currentPlayer = playerO.sign;
+        displayController.winnerText.innerHTML = `Player <span class="winning-sign"></span> Wins!</p>`;
+        displayController.currentTurn.innerHTML = "Current Turn: <span class='blue'>Player O</span>";
         displayController.clearSquares();
+        displayController.hideWinner();
+        winCheck(gameBoard.board);
+        currentPlayer = playerX.sign;
         gameBoard.resetBoard();
-        winCheck();
     };
 
-    return { playerX, playerO, currentPlayer, winnerContainer, winCheck, reset, aiPlay }
+    /*const emptySquares = () => {
+        return gameBoard.board.filter(ele => typeof ele === "number");
+    };
+ 
+    const minimax = (board, sign) => {
+        const availSpots = emptySquares(board);
+ 
+        const humanSign = "O";
+        const aiSign = "X";
+ 
+        if (winCheck(gameBoard.board, humanSign)) {
+            return { score: -10 }
+        } else if (winCheck(gameBoard.board, aiSign)) {
+            return { score: 10 }
+        } else if (availSpots.length === 0) {
+            return { score: 0 }
+        };
+    };*/
+
+    return {
+        reset,
+        aiPlay,
+        getCurrentPlayer,
+        makeMove,
+    };
 })();
 
 
 const gameBoard = (() => {
     const gameSquare = document.querySelectorAll(".square");
 
-    const board = ["", "", "", "", "", "", "", "", ""];
+    const board = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
     const updateBoard = (index, sign) => {
         if (sign === "X") gameSquare[index].classList.add("purple");
@@ -128,64 +228,13 @@ const gameBoard = (() => {
 
     const resetBoard = () => {
         for (i = 0; i < board.length; i++) {
-            board[i] = "";
+            board[i] = i;
         };
     };
 
-    return { updateBoard, resetBoard, board }
-})();
-
-
-const displayController = (() => {
-    const currentTurn = document.querySelector(".current-turn");
-    const gameSquare = document.querySelectorAll(".square");
-    const backArrow = document.querySelector(".back-arrow");
-    const resetButton = document.querySelector(".reset");
-
-    gameSquare.forEach(square => {
-        square.addEventListener("click", function () {
-            if (square.textContent != "") return;
-            const index = square.dataset.index;
-            makeMove(index);
-        });
-    });
-
-    const makeMove = (index) => {
-        fillSquare(index);
-        let result = gameController.winCheck();
-        if (result) return; 
-        if (initialiseGame.checkAI()) gameController.aiPlay();
+    return {
+        updateBoard,
+        resetBoard,
+        board,
     };
-
-    const currentSign = () => {
-        if (gameController.currentPlayer === gameController.playerX.sign) {
-            currentTurn.innerHTML = "Current Turn: <span class='purple'>Player X</span>";
-            return gameController.currentPlayer = gameController.playerO.sign;
-        };
-        currentTurn.innerHTML = "Current Turn: <span class='blue'>Player O</span>";
-        return gameController.currentPlayer = gameController.playerX.sign;
-    };
-
-    const fillSquare = (index) => {
-        gameBoard.updateBoard(index, currentSign());
-    };
-
-    resetButton.addEventListener("click", () => {
-        gameController.reset();
-    });
-
-    backArrow.addEventListener("click", () => {
-        gameController.reset();
-        initialiseGame.closeGame();
-    });
-
-    const clearSquares = () => {
-        gameSquare.forEach(square => {
-            square.classList.remove("purple");
-            square.classList.remove("blue");
-            square.textContent = "";
-        });
-    };
-
-    return { clearSquares, fillSquare, currentTurn }
 })();
