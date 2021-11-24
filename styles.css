@@ -81,6 +81,18 @@ body {
     display: none;
 }
 
+.difficulty {
+    color: var(--darkBlue);
+}
+
+.difficulty:hover {
+cursor: pointer
+}
+
+.red {
+    color: red;
+}
+
 .blue {
     color: var(--lightBlue);
 }

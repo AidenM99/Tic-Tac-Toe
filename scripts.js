@@ -14,6 +14,7 @@ const displayController = (() => {
     const winnerText = document.querySelector(".winner-text");
     const backArrow = document.querySelector(".back-arrow");
     const gameSquare = document.querySelectorAll(".square");
+    const difficulty = document.querySelector(".difficulty");
     const resetButton = document.querySelector(".reset");
 
     let isAI = false;
@@ -29,12 +30,21 @@ const displayController = (() => {
     });
 
     const initialiseGame = (e) => {
+        if (e.target.value === "AI") {
+            isAI = true;
+        } else {
+            isAI = false;
+        };
         startGame();
-        if (e.target.value === "AI") return isAI = true;
-        isAI = false;
     };
 
     const startGame = () => {
+        if (aiCheck()) {
+            difficulty.style.display = "block";
+            difficulty.innerHTML = "Difficulty: <span class='purple'>Normal</span>";
+        } else {
+            difficulty.style.display = "none";
+        };
         startMenuContainer.style.height = "200px";
         buttonContainer.style.display = "none";
         gameContainer.style.display = "block";
@@ -48,6 +58,16 @@ const displayController = (() => {
         subHeading.style.display = null;
     };
 
+    difficulty.addEventListener("click", () => {
+        difficultyMode();
+        gameController.reset();
+    });
+
+    const difficultyMode = () => {
+        difficulty.textContent.includes("Normal") ? difficulty.innerHTML = "Difficulty: <span class='red'>Insane</span>" :
+            difficulty.innerHTML = "Difficulty: <span class='purple'>Normal</span>"
+    };
+
     const clearSquares = () => {
         gameSquare.forEach(square => {
             square.classList.remove("purple");
@@ -56,7 +76,7 @@ const displayController = (() => {
         });
     };
 
-    const showWinner = (board, tie) => {
+    const showWinner = (board) => {
         winnerText.textContent = `Player ${board} Wins!`;
         winnerContainer.style.display = "block";
     };
@@ -95,6 +115,7 @@ const displayController = (() => {
         hideWinner,
         currentTurn,
         winnerText,
+        difficulty,
     };
 })();
 
@@ -102,6 +123,8 @@ const displayController = (() => {
 const gameController = (() => {
     const playerX = createPlayer("X");
     const playerO = createPlayer("O");
+
+    let gameOver;
 
     let currentPlayer = playerX.sign;
 
@@ -111,17 +134,21 @@ const gameController = (() => {
 
     const aiPlay = () => {
         if (gameBoard.board.every(ele => ele === "X" || ele === "O")) return;
-        let num;
-        do {
-            num = randomMove();
-        } while (typeof gameBoard.board[num] != "number");
-        fillSquare(num);
-        winCheck(gameBoard.board, getCurrentPlayer());
+        if (displayController.difficulty.textContent.includes("Normal")) {
+            let num;
+            do {
+                num = randomMove();
+            } while (typeof gameBoard.board[num] != "number");
+            fillSquare(num);
+        } else {
+            const bestMove = minimax(gameBoard.board, switchSign());
+            gameBoard.updateBoard(bestMove.index, getCurrentPlayer());
+            winCheck(gameBoard.board, getCurrentPlayer());
+        };
     };
 
     const randomMove = () => {
-        const randomNum = Math.floor(Math.random() * gameBoard.board.length);
-        return randomNum;
+        return Math.floor(Math.random() * gameBoard.board.length);
     };
 
     const makeMove = (index) => {
@@ -157,7 +184,6 @@ const gameController = (() => {
     ];
 
     const winCheck = (board, sign) => {
-        let winningCombo = false;
 
         winningCombinations.forEach(row => {
             const a = row[0];
@@ -166,14 +192,92 @@ const gameController = (() => {
 
             if (board[a] === sign && board[b] === sign && board[c] === sign) {
                 displayController.showWinner(board[a]);
-                winningCombo = true;
+                gameOver = true;
             };
 
-            if (board.every(ele => typeof ele != "number" && !winningCombo)) {
+            if (board.every(ele => typeof ele != "number" && !gameOver)) {
                 displayController.showTie();
+                gameOver = true;
             };
         });
-        return winningCombo;
+        return gameOver;
+    };
+
+    const evaluateMove = (board, sign) => {
+        if (
+            (board[0] === sign && board[1] === sign && board[2] === sign) ||
+            (board[3] === sign && board[4] === sign && board[5] === sign) ||
+            (board[6] === sign && board[7] === sign && board[8] === sign) ||
+            (board[0] === sign && board[3] === sign && board[6] === sign) ||
+            (board[1] === sign && board[4] === sign && board[7] === sign) ||
+            (board[2] === sign && board[5] === sign && board[8] === sign) ||
+            (board[0] === sign && board[4] === sign && board[8] === sign) ||
+            (board[2] === sign && board[4] === sign && board[6] === sign)
+        ) {
+            return true;
+        } else {
+            return false;
+        };
+    };
+
+    const emptySquares = (newBoard) => {
+        return newBoard.filter(ele => typeof ele === "number");
+    };
+
+    const minimax = (newBoard, sign) => {
+        const availSpots = emptySquares(newBoard);
+
+        if (evaluateMove(newBoard, "O")) {
+            return { score: -10 }
+        } else if (evaluateMove(newBoard, "X")) {
+            return { score: 10 }
+        } else if (availSpots.length === 0) {
+            return { score: 0 }
+        };
+
+        var moves = [];
+
+        for (let i = 0; i < availSpots.length; i++) {
+            var move = {};
+
+            move.index = newBoard[availSpots[i]];
+
+            newBoard[availSpots[i]] = sign;
+
+            if (sign === "X") {
+                var outcome = minimax(newBoard, "O");
+                move.score = outcome.score;
+            } else {
+                var outcome = minimax(newBoard, "X");
+                move.score = outcome.score;
+            };
+
+            newBoard[availSpots[i]] = move.index;
+
+            moves.push(move);
+        };
+
+        let bestMove = null;
+
+        if (sign === "X") {
+            let bestScore = -Infinity;
+            for (i = 0; i < moves.length; i++) {
+                if (moves[i].score > bestScore) {
+                    bestScore = moves[i].score;
+                    bestMove = i;
+                }
+            }
+        } else {
+            let bestScore = Infinity;
+            for (i = 0; i < moves.length; i++) {
+                if (moves[i].score < bestScore) {
+                    bestScore = moves[i].score;
+                    bestMove = i;
+                };
+            };
+        };
+
+        return moves[bestMove]
     };
 
     const reset = () => {
@@ -181,29 +285,11 @@ const gameController = (() => {
         displayController.currentTurn.innerHTML = "Current Turn: <span class='blue'>Player O</span>";
         displayController.clearSquares();
         displayController.hideWinner();
-        winCheck(gameBoard.board);
-        currentPlayer = playerX.sign;
+        gameOver = undefined;
         gameBoard.resetBoard();
+        currentPlayer = playerX.sign;
+        winCheck(gameBoard.board);
     };
-
-    /*const emptySquares = () => {
-        return gameBoard.board.filter(ele => typeof ele === "number");
-    };
- 
-    const minimax = (board, sign) => {
-        const availSpots = emptySquares(board);
- 
-        const humanSign = "O";
-        const aiSign = "X";
- 
-        if (winCheck(gameBoard.board, humanSign)) {
-            return { score: -10 }
-        } else if (winCheck(gameBoard.board, aiSign)) {
-            return { score: 10 }
-        } else if (availSpots.length === 0) {
-            return { score: 0 }
-        };
-    };*/
 
     return {
         reset,
@@ -211,6 +297,7 @@ const gameController = (() => {
         getCurrentPlayer,
         makeMove,
     };
+
 })();
 
 
