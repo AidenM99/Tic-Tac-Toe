@@ -83,10 +83,24 @@ body {
 
 .difficulty {
     color: var(--darkBlue);
+    font-weight: bold;
+    margin: 0 0 24px 0;
 }
 
 .difficulty:hover {
 cursor: pointer
+}
+
+.winner-text {
+    margin: 0;
+}
+
+.current-turn {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 1.5rem;
+    color: var(--darkBlue);
+    font-weight: bold;
 }
 
 .red {
@@ -99,6 +113,14 @@ cursor: pointer
 
 .purple {
     color: var(--purple);
+}
+
+.green {
+    color: green;
+}
+
+.orange {
+    color: orange;
 }
 
 /***** Buttons *****/
@@ -155,14 +177,36 @@ cursor: pointer
     font-size: 4rem;
 }
 
-.winner-text {
-    margin: 0;
+@media (max-width: 481px) {
+    body {
+        margin: 20px;
+    }
+
+    .main-heading {
+        font-size: 3rem;
+    }
+
+    .game-board-container {
+        grid-template-rows: repeat(3, 130px);
+    }
 }
 
-.current-turn {
-    text-align: center;
-    margin-top: 40px;
-    font-size: 1.5rem;
-    color: var(--darkBlue);
-    font-weight: bold;
-}
+    @media (max-width: 400px) {
+        .main-heading {
+            font-size: 2.5rem;
+        }
+
+        .game-board-container {
+            grid-template-rows: repeat(3, 110px);
+        }
+
+        .current-turn {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 350px) {
+        .game-board-container {
+            grid-template-rows: repeat(3, 100px);
+        }
+    }
