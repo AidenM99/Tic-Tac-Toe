@@ -5,7 +5,6 @@ function createPlayer(sign) {
 
 const displayController = (() => {
     const buttonContainer = document.querySelector(".opponent-button-container");
-    const startMenuContainer = document.querySelector(".start-menu-container");
     const opponentButtons = document.querySelectorAll(".opponent-button");
     const winnerContainer = document.querySelector(".winner-container");
     const gameContainer = document.querySelector(".game-container");
@@ -45,14 +44,12 @@ const displayController = (() => {
         } else {
             difficulty.style.display = "none";
         };
-        startMenuContainer.style.height = "200px";
         buttonContainer.style.display = "none";
         gameContainer.style.display = "block";
         subHeading.style.display = "none";
     };
 
     const closeGame = () => {
-        startMenuContainer.style.height = null;
         buttonContainer.style.display = null;
         gameContainer.style.display = null;
         subHeading.style.display = null;
@@ -247,9 +244,11 @@ const gameController = (() => {
     };
 
     const minimax = (newBoard, sign) => {
-        const availSpots = emptySquares(newBoard);
-        let isEvaluating = true;
-
+        // Find available spaces on the board
+        const availSpots = emptySquares(newBoard); 
+        // Prevent evaluateMove() from ending the game when AI is simulating moves 
+        let isEvaluating = true; 
+        // Return a 'score' value if a terminal state on the board is found
         if (evaluateMove(newBoard, "O", isEvaluating)) {
             return { score: -10 }
         } else if (evaluateMove(newBoard, "X", isEvaluating)) {
@@ -257,31 +256,32 @@ const gameController = (() => {
         } else if (availSpots.length === 0) {
             return { score: 0 }
         };
-
+        // Record the outcome of each simulation
         const moves = [];
 
         for (let i = 0; i < availSpots.length; i++) {
             var move = {};
-
+            // Index in move obj equals current iteration of 'i'
             move.index = newBoard[availSpots[i]];
-
+            // Current sign 'i' is iterating over on filtered board is set to 'X' or 'O'
             newBoard[availSpots[i]] = sign;
-
+            // Recursively run the minimax function for the altered board
             if (sign === "X") {
                 const outcome = minimax(newBoard, "O");
+                // Save the score from evaluateMove() into the move object
                 move.score = outcome.score;
             } else {
                 const outcome = minimax(newBoard, "X");
                 move.score = outcome.score;
             };
-
+            // Reset the current board back to the state it was before a move was made
             newBoard[availSpots[i]] = move.index;
 
             moves.push(move);
         };
 
         let bestMove = null;
-
+        // Locate the reference for the best move found
         if (sign === "X") {
             let bestScore = -Infinity;
             for (i = 0; i < moves.length; i++) {

@@ -20,20 +20,21 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
 }
 
 
 /***** Containers *****/
 .start-menu-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    height: 90vh;
+    margin: 30px 0;
 }
 
 .game-container {
     display: none;
+    margin: 0;
 }
 
 .game-board-container {
@@ -71,7 +72,7 @@ body {
 
 .sub-heading {
     font-size: 2rem;
-    margin: 10px 0 20px;
+    margin: 0  0 15px 0;
 }
 
 .main-heading, .sub-heading {
@@ -84,13 +85,13 @@ body {
 }
 
 .show-text {
-    display: none;
+    visibility: hidden;
 }
 
 .difficulty {
     color: var(--darkBlue);
     font-weight: bold;
-    margin: 0 0 24px 0;
+    margin: 0 0 20px 0;
 }
 
 .difficulty:hover {
@@ -103,7 +104,7 @@ cursor: pointer
 
 .current-turn {
     text-align: center;
-    margin-top: 40px;
+    margin: 30px 0 18px 0;
     font-size: 1.5rem;
     color: var(--darkBlue);
     font-weight: bold;
@@ -145,6 +146,7 @@ cursor: pointer
     font-weight:bold;
     font-size: 1rem;
     font-family: 'Mochiy Pop P One', sans-serif;
+    -webkit-appearance: none;
     }
 
     .opponent-button {
@@ -160,7 +162,6 @@ cursor: pointer
 
     .back-arrow {
         color: var(--yellow);
-        margin: 0 0 20px 0;
     }
 
     .back-arrow:hover {
@@ -170,7 +171,7 @@ cursor: pointer
     }
 
     .back-arrow:hover + .show-text {
-        display: block;
+        visibility: visible;
     }
 
 
