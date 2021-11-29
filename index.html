@@ -14,25 +14,17 @@
 <body>
 
     <header>
-        <div class="start-menu-container">
-
+        <div class="start-menu">
             <h1 class="main-heading">Tic Tac Toe</h1>
             <h2 class="sub-heading">vs</h2>
-
             <div class="opponent-button-container">
                 <input type="button" value="PLAYER" class="player opponent-button">
                 <input type="button" value="AI" class="ai opponent-button">
             </div>
-
         </div>
     </header>
 
-    <div class="winner-container">
-        <p class="winner-text"></p>
-        <input type="button" value="PLAY AGAIN" class="reset">
-    </div>
-
-    <div class="game-container">
+    <main class="game-container">
         <div class="game-board-container">
             <div class="square" data-index="0"></div>
             <div class="square" data-index="1"></div>
@@ -45,15 +37,20 @@
             <div class="square" data-index="8"></div>
         </div>
 
-        <div class="footer">
+        <div class="winner-modal">
+            <p class="winner-text"></p>
+            <input type="button" value="PLAY AGAIN" class="reset">
+        </div>
+
+        <footer>
             <p class="current-turn">Current Turn: <span class="blue">Player O</span></p>
             <p class="difficulty"></p>
             <i class="back-arrow fas fa-arrow-left fa-2x"></i>
             <div class="show-text">
                 <p class="go-back">Back To Menu</p>
             </div>
-        </div>
-    </div>
+        </footer>
+    </main>
 
     <script src="scripts.js"></script>
 </body>

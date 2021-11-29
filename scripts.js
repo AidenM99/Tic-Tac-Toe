@@ -6,7 +6,7 @@ function createPlayer(sign) {
 const displayController = (() => {
     const buttonContainer = document.querySelector(".opponent-button-container");
     const opponentButtons = document.querySelectorAll(".opponent-button");
-    const winnerContainer = document.querySelector(".winner-container");
+    const winnerModal = document.querySelector(".winner-modal");
     const gameContainer = document.querySelector(".game-container");
     const subHeading = document.querySelector(".sub-heading");
     const currentTurn = document.querySelector(".current-turn");
@@ -91,16 +91,16 @@ const displayController = (() => {
 
     const showWinner = (board) => {
         winnerText.textContent = `Player ${board} Wins!`;
-        winnerContainer.style.display = "block";
+        winnerModal.style.display = "block";
     };
 
     const showTie = () => {
         winnerText.textContent = "It's a tie!";
-        winnerContainer.style.display = "block";
+        winnerModal.style.display = "block";
     };
 
     const hideWinner = () => {
-        winnerContainer.style.display = "none";
+        winnerModal.style.display = "none";
     };
 
     difficulty.addEventListener("click", () => {
@@ -181,9 +181,9 @@ const gameController = (() => {
         
         // AI picks random move or perfect move depending on number generated and difficulty setting
         if (
-            (displayController.getDifficulty() === "Easy" && difficultySlider <= 75) ||
-            (displayController.getDifficulty() === "Normal" && difficultySlider <= 50) ||
-            (displayController.getDifficulty() === "Hard" && difficultySlider <= 25)
+            (displayController.getDifficulty() === "Easy" && difficultySlider <= 50) ||
+            (displayController.getDifficulty() === "Normal" && difficultySlider <= 30) ||
+            (displayController.getDifficulty() === "Hard" && difficultySlider <= 20)
         ) {
             const availSpots = emptySquares(board);
             const getRandomIndex = Math.floor(Math.random() * availSpots.length);
